@@ -2,19 +2,29 @@
 
 ## RAGTruth dataset download
 
-This project uses the RAGTruth hallucination benchmark from ParticleMedia.
+**This project uses the RAGTruth hallucination benchmark from ParticleMedia.** [RAGTruth README](https://github.com/ParticleMedia/RAGTruth/blob/main/README.md)
 
 The dataset files are included in this repository under `data/raw/` so team members can pull the project and work with the same data immediately.
 
-Reference: https://github.com/ParticleMedia/RAGTruth/blob/main/README.md
+1. If you are starting from scratch, clone the project repository to your computer:
 
-1. If you want the project files from GitHub, pull the repository:
+```bash
+git clone https://github.com/alexafshar/aai501-grp1-project.git
+```
+
+Then move into the project folder:
+
+```bash
+cd aai501-grp1-project
+```
+
+2. To update your local repository with the latest project files from GitHub, pull the repository:
 
 ```bash
 git pull origin main
 ```
 
-2. Load the files with pandas and verify the expected row counts:
+3. Load the files with pandas and verify the expected row counts:
 
 ```bash
 python
