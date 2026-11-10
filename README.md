@@ -24,7 +24,7 @@ cd aai501-grp1-project
 git pull origin main
 ```
 
-3. Load the files with pandas and verify the expected row counts:
+3. Load the files with pandas and verify the expected row counts. You can do this either in a Python session or by opening the notebook at `notebooks/01_load_ragtruth_data.ipynb`.
 
 ```bash
 python
