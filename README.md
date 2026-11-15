@@ -88,34 +88,34 @@ Legend: ✅ Done · 🟨 In progress · ⬜ Not started · ⛔ Blocked
 
 To update, edit this README on GitHub (pencil icon) and change the emoji in the Status column. The full task descriptions are in the Group 01 project plan.
 
-| # | Task | Owner | Due | Status | Comments |
-|---|---|---|---|---|---|
-| T01 | Finalize and submit the proposal | Javier | Nov 9 | ✅ Done |  |
-| T02 | Create the GitHub repo, README, folder structure | Alex | Nov 9 | ✅ Done |  |
-| T03 | Download RAGTruth and confirm both files load | Alex | Nov 9 | ✅ Done |  |
-| T04 | Join files, build the label, apply exclusions | Angelica | Nov 13 | ✅ Done |  |
-| T05 | Count input and output tokens | Alex | Nov 13 | ✅ Done | Input tokens = prompt only, because the prompt already includes the source. Counts use cl100k_base (exact for GPT, approximate for Llama-2 and Mistral). Output: data/processed/T05_token_counts.csv, joinable to features.csv on id. |
-| T06 | Record price assumptions with sources | Alex | Nov 16 | ✅ Done | All prices are in T06_config.yaml with sources, checked 2026-11-14. Both GPT models are retired, so last published prices are used; local models use hosted-API prices as a proxy. The $1.00 miss cost is an assumption varied in T19. |
-| T07 | Engineer the features | Angelica | Nov 16 | ✅ Done |  |
-| T08 | Check the train/test split for leakage | Javier | Nov 16 | ⬜ Not started |  |
-| T09 | Build baseline models | Javier | Nov 16 | ⬜ Not started |  |
-| T10 | Submit the status update; remind check-ins | Alex | Nov 16 | ⬜ Not started |  |
-| T11 | Make exploratory charts | Angelica | Nov 20 | ⬜ Not started |  |
-| T12 | Train random forest and XGBoost | Javier | Nov 23 | ⬜ Not started |  |
-| T13 | Compute hallucination rates by model | Angelica | Nov 23 | ⬜ Not started |  |
-| T14 | Compute cost per answer and per trustworthy answer | Alex | Nov 23 | ⬜ Not started |  |
-| T15 | Find the most important features | Javier | Nov 27 | ⬜ Not started |  |
-| T16 | Cluster the hallucinated answers | Angelica | Nov 27 | ⬜ Not started |  |
-| T17 | Find the best threshold; simulate local-first fallback | Alex | Nov 30 | ⬜ Not started |  |
-| T18 | Build the learning curve | Alex | Nov 30 | ⬜ Not started |  |
-| T19 | Run the sensitivity analysis | Alex | Nov 30 | ⬜ Not started |  |
-| T20 | Draft your own report sections | All | Nov 30 | ⬜ Not started |  |
-| T21 | Clean up the code (PEP 8, README run steps) | Alex | Dec 3 | ⬜ Not started |  |
-| T22 | Assemble the final report | Alex | Dec 4 | ⬜ Not started |  |
-| T23 | Build the slides | All (Alex merges) | Dec 4 | ⬜ Not started |  |
-| T24 | Rehearse, record, and upload the presentation | All | Dec 6 | ⬜ Not started |  |
-| T25 | Final submission | Alex | Dec 7 | ⬜ Not started |  |
-| T26 | Peer evaluation | All | Dec 7 | ⬜ Not started |  |
+| # | Task | Owner | Due | Status | Depends on | Comments |
+|---|---|---|---|---|---|---|
+| T01 | Finalize and submit the proposal | Javier | Nov 9 | ✅ Done | — |  |
+| T02 | Create the GitHub repo, README, folder structure | Alex | Nov 9 | ✅ Done | — |  |
+| T03 | Download RAGTruth and confirm both files load | Alex | Nov 9 | ✅ Done | T02 |  |
+| T04 | Join files, build the label, apply exclusions | Angelica | Nov 13 | ✅ Done | T03 |  |
+| T05 | Count input and output tokens | Alex | Nov 13 | ✅ Done | T04 | Input tokens = prompt only, because the prompt already includes the source. Counts use cl100k_base (exact for GPT, approximate for Llama-2 and Mistral). Output: data/processed/T05_token_counts.csv, joinable to features.csv on id. |
+| T06 | Record price assumptions with sources | Alex | Nov 16 | ✅ Done | — | All prices are in T06_config.yaml with sources, checked 2026-11-14. Both GPT models are retired, so last published prices are used; local models use hosted-API prices as a proxy. The $1.00 miss cost is an assumption varied in T19. |
+| T07 | Engineer the features | Angelica | Nov 16 | ✅ Done | T04 |  |
+| T08 | Check the train/test split for leakage | Javier | Nov 16 | ⬜ Not started | T04 |  |
+| T09 | Build baseline models | Javier | Nov 16 | ⬜ Not started | T07, T08 |  |
+| T10 | Submit the status update; remind check-ins | Alex | Nov 16 | ⬜ Not started | — |  |
+| T11 | Make exploratory charts | Angelica | Nov 20 | ⬜ Not started | T04, T07 |  |
+| T12 | Train random forest and XGBoost | Javier | Nov 23 | ⬜ Not started | T09 |  |
+| T13 | Compute hallucination rates by model | Angelica | Nov 23 | ⬜ Not started | T04 |  |
+| T14 | Compute cost per answer and per trustworthy answer | Alex | Nov 23 | ⬜ Not started | T05, T06 |  |
+| T15 | Find the most important features | Javier | Nov 27 | ⬜ Not started | T12 |  |
+| T16 | Cluster the hallucinated answers | Angelica | Nov 27 | ⬜ Not started | T07 |  |
+| T17 | Find the best threshold; simulate local-first fallback | Alex | Nov 30 | ⬜ Not started | T12, T14 |  |
+| T18 | Build the learning curve | Alex | Nov 30 | ⬜ Not started | T12 |  |
+| T19 | Run the sensitivity analysis | Alex | Nov 30 | ⬜ Not started | T17 |  |
+| T20 | Draft your own report sections | All | Nov 30 | ⬜ Not started | T11, T13, T15, T16, T18, T19 |  |
+| T21 | Clean up the code (PEP 8, README run steps) | Alex | Dec 3 | ⬜ Not started | T20 |  |
+| T22 | Assemble the final report | Alex | Dec 4 | ⬜ Not started | T20 |  |
+| T23 | Build the slides | All (Alex merges) | Dec 4 | ⬜ Not started | T20 |  |
+| T24 | Rehearse, record, and upload the presentation | All | Dec 6 | ⬜ Not started | T23 |  |
+| T25 | Final submission | Alex | Dec 7 | ⬜ Not started | T21, T22, T24 |  |
+| T26 | Peer evaluation | All | Dec 7 | ⬜ Not started | — |  |
 
 ## Final deliverables (due Dec 7)
 
