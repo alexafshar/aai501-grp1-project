@@ -48,3 +48,85 @@ Expected output:
 ```
 
 Side note: if a teammate wants to refresh the dataset from the upstream source instead of using the repository copy, they can follow the original RAGTruth instructions and copy the files into `data/raw/` manually.
+
+## Token counts (task T05)
+
+`notebooks/T05_count_tokens.ipynb` counts tokens for every response in `data/responses_clean.csv` (the T04 output):
+
+- `input_tokens`: tokens in the `prompt` sent to the model. The prompt already includes the source passages, so the source is not counted twice.
+- `output_tokens`: tokens in the model's `response`.
+
+It writes the two columns back into `data/responses_clean.csv` (local only, since that file is over GitHub's 100 MB limit) and saves a small shareable file, `data/processed/T05_token_counts.csv`, with `id`, `model`, `input_tokens`, and `output_tokens`. Join it to `data/processed/features.csv` on `id`.
+
+To rerun it, open the notebook and run all cells (first `pip install tiktoken pandas` if needed).
+
+Counts use OpenAI's `cl100k_base` encoding, so they are exact for GPT-3.5 and GPT-4 and approximate for Llama-2 and Mistral, which use their own tokenizers.
+
+## Price assumptions (task T06)
+
+`T06_config.yaml` holds every price and cost assumption the cost analysis uses (T14, T17, T19): input and output prices for the six RAGTruth models, the LLM-judge prices for the checking-cost comparison, and the guardrail and sensitivity settings. Each price lists its source and the date it was checked (2026-11-14). Read it in a notebook with:
+
+```python
+import yaml
+config = yaml.safe_load(open("T06_config.yaml"))
+```
+
+Prices are cited assumptions, not data. The four open-weight models (Llama-2 7B, 13B, 70B; Mistral-7B) use hosted-API prices as a stand-in for the cost of running them locally. The cost of a missed hallucination ($1.00) has no published source and is varied in T19.
+
+References (APA 7):
+
+- LLM Reference. (n.d.). *Together AI API: Available models and pricing*. Retrieved November 14, 2026, from https://www.llmreference.com/provider/together-ai-api
+- OpenAI. (n.d.-a). *API pricing*. Retrieved November 14, 2026, from https://developers.openai.com/api/docs/pricing
+- OpenAI. (n.d.-b). *GPT-3.5 Turbo*. Retrieved November 14, 2026, from https://developers.openai.com/api/docs/models/gpt-3.5-turbo
+- OpenAI. (n.d.-c). *GPT-4*. Retrieved November 14, 2026, from https://developers.openai.com/api/docs/models/gpt-4
+
+## Task status
+
+*After finishing each task, add 2–3 sentences to its Comments cell in the table below: what you did, what you found, and any decisions you made (for example, "input tokens = prompt only"). These notes become most of the report's Data and Methods sections, so writing them as you go saves time at the end.*
+
+Legend: ✅ Done · 🟨 In progress · ⬜ Not started · ⛔ Blocked
+
+To update, edit this README on GitHub (pencil icon) and change the emoji in the Status column. The full task descriptions are in the Group 01 project plan.
+
+| # | Task | Owner | Due | Status | Comments |
+|---|---|---|---|---|---|
+| T01 | Finalize and submit the proposal | Javier | Nov 9 | ✅ Done |  |
+| T02 | Create the GitHub repo, README, folder structure | Alex | Nov 9 | ✅ Done |  |
+| T03 | Download RAGTruth and confirm both files load | Alex | Nov 9 | ✅ Done |  |
+| T04 | Join files, build the label, apply exclusions | Angelica | Nov 13 | ✅ Done |  |
+| T05 | Count input and output tokens | Alex | Nov 13 | ✅ Done | Input tokens = prompt only, because the prompt already includes the source. Counts use cl100k_base (exact for GPT, approximate for Llama-2 and Mistral). Output: data/processed/T05_token_counts.csv, joinable to features.csv on id. |
+| T06 | Record price assumptions with sources | Alex | Nov 16 | ✅ Done | All prices are in T06_config.yaml with sources, checked 2026-11-14. Both GPT models are retired, so last published prices are used; local models use hosted-API prices as a proxy. The $1.00 miss cost is an assumption varied in T19. |
+| T07 | Engineer the features | Angelica | Nov 16 | ✅ Done |  |
+| T08 | Check the train/test split for leakage | Javier | Nov 16 | ⬜ Not started |  |
+| T09 | Build baseline models | Javier | Nov 16 | ⬜ Not started |  |
+| T10 | Submit the status update; remind check-ins | Alex | Nov 16 | ⬜ Not started |  |
+| T11 | Make exploratory charts | Angelica | Nov 20 | ⬜ Not started |  |
+| T12 | Train random forest and XGBoost | Javier | Nov 23 | ⬜ Not started |  |
+| T13 | Compute hallucination rates by model | Angelica | Nov 23 | ⬜ Not started |  |
+| T14 | Compute cost per answer and per trustworthy answer | Alex | Nov 23 | ⬜ Not started |  |
+| T15 | Find the most important features | Javier | Nov 27 | ⬜ Not started |  |
+| T16 | Cluster the hallucinated answers | Angelica | Nov 27 | ⬜ Not started |  |
+| T17 | Find the best threshold; simulate local-first fallback | Alex | Nov 30 | ⬜ Not started |  |
+| T18 | Build the learning curve | Alex | Nov 30 | ⬜ Not started |  |
+| T19 | Run the sensitivity analysis | Alex | Nov 30 | ⬜ Not started |  |
+| T20 | Draft your own report sections | All | Nov 30 | ⬜ Not started |  |
+| T21 | Clean up the code (PEP 8, README run steps) | Alex | Dec 3 | ⬜ Not started |  |
+| T22 | Assemble the final report | Alex | Dec 4 | ⬜ Not started |  |
+| T23 | Build the slides | All (Alex merges) | Dec 4 | ⬜ Not started |  |
+| T24 | Rehearse, record, and upload the presentation | All | Dec 6 | ⬜ Not started |  |
+| T25 | Final submission | Alex | Dec 7 | ⬜ Not started |  |
+| T26 | Peer evaluation | All | Dec 7 | ⬜ Not started |  |
+
+## Final deliverables (due Dec 7)
+
+Everything below is required by Assignment 7.2. One team member submits; no extensions are given.
+
+| Deliverable | What's required |
+|---|---|
+| 1. Final report | About 10 pages (appendices excluded), APA 7 style, Word or PDF. Must cover: purpose, goals, and scope, with references; whether we adapted a published algorithm or built a new one, and how the work relates to course topics; a clear explanation of each algorithm with analysis, evaluation, and critique (algorithm comparisons shown as charts preferred); an appendix listing each member's contributions. |
+| 2. Code | Complete, clean, well-documented code following PEP 8, submitted to Canvas or linked as this public GitHub repository in the report. A README is required. |
+| 3. Slides and video | A 20–30 minute recorded presentation with every member presenting, and the video link on the title slide. |
+| 4. Peer evaluation | Assignment 7.3, completed by each member individually (45 points). |
+| 5. AI-use disclosure | Any AI tool use must be disclosed, cited, and explained in the report and in code comments. |
+
+The report goes through Turnitin (a plagiarism checker), so cite every source we draw on.
