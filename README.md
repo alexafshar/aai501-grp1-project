@@ -80,6 +80,30 @@ References (APA 7):
 - OpenAI. (n.d.-b). *GPT-3.5 Turbo*. Retrieved November 14, 2026, from https://developers.openai.com/api/docs/models/gpt-3.5-turbo
 - OpenAI. (n.d.-c). *GPT-4*. Retrieved November 14, 2026, from https://developers.openai.com/api/docs/models/gpt-4
 
+## Train/test leakage check (task T08)
+
+`notebooks/T08_train_test_leakage_check.ipynb` checks that the train and test sets in `data/processed/features.csv` are truly separate. Each source passage has about six responses (one per model), so if the same `source_id` landed in both sets, the model could learn source-specific patterns and the test scores would be inflated.
+
+The predefined `split` column passes the check: 14,942 train rows and 2,675 test rows, with no `source_id` in both. Every later model should use this column instead of a random row-level split.
+
+Classes are moderately imbalanced (43% hallucinated overall), and the hallucination rate differs between the sets (45% train vs. 35% test), which lowers precision on the test set.
+
+## Baseline models (task T09)
+
+`notebooks/T09_baseline_models.ipynb` trains three baseline classifiers on the 14 engineered features, using the T08 split: logistic regression, a decision tree (max depth 5), and a random forest (200 trees). All use `class_weight="balanced"` with median imputation and standard scaling. It saves the comparison to `data/processed/baseline_model_results.csv`.
+
+Test-set results (hallucinated = positive class):
+
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC | Avg. precision |
+|---|---|---|---|---|---|---|
+| Logistic regression | 0.779 | 0.657 | 0.779 | **0.713** | **0.872** | **0.802** |
+| Random forest | 0.784 | 0.672 | 0.758 | 0.713 | 0.862 | 0.792 |
+| Decision tree | 0.773 | 0.646 | **0.792** | 0.711 | 0.860 | 0.761 |
+
+Logistic regression is the benchmark for T12: it has the best F1, ROC-AUC, and average precision. The three models are within 0.002 F1 of each other, so the margin is small; if recall is the main criterion, the decision tree is slightly ahead. The best model was chosen on the test set, which the report should state.
+
+To rerun it, open the notebook and run all cells (requires `pandas`, `scikit-learn`, `matplotlib`, `seaborn`).
+
 ## Task status
 
 *After finishing each task, add 2–3 sentences to its Comments cell in the table below: what you did, what you found, and any decisions you made (for example, "input tokens = prompt only"). These notes become most of the report's Data and Methods sections, so writing them as you go saves time at the end.*
@@ -97,8 +121,8 @@ To update, edit this README on GitHub (pencil icon) and change the emoji in the 
 | T05 | Count input and output tokens | Alex | Nov 13 | ✅ Done | T04 | Input tokens = prompt only, because the prompt already includes the source. Counts use cl100k_base (exact for GPT, approximate for Llama-2 and Mistral). Output: data/processed/T05_token_counts.csv, joinable to features.csv on id. |
 | T06 | Record price assumptions with sources | Alex | Nov 16 | ✅ Done | — | All prices are in T06_config.yaml with sources, checked 2026-11-14. Both GPT models are retired, so last published prices are used; local models use hosted-API prices as a proxy. The $1.00 miss cost is an assumption varied in T19. |
 | T07 | Engineer the features | Angelica | Nov 16 | ✅ Done | T04 |  |
-| T08 | Check the train/test split for leakage | Javier | Nov 16 | ⬜ Not started | T04 |  |
-| T09 | Build baseline models | Javier | Nov 16 | ⬜ Not started | T07, T08 |  |
+| T08 | Check the train/test split for leakage | Javier | Nov 16 | ✅ Done | T04 | The predefined `split` column has no `source_id` in both train (14,942 rows) and test (2,675 rows), so it is leakage-safe and all models use it. Hallucination rate is 45% in train vs. 35% in test. |
+| T09 | Build baseline models | Javier | Nov 16 | ✅ Done | T07, T08 | Trained logistic regression, decision tree, and random forest (balanced class weights) on the T08 split. Logistic regression is the benchmark (F1 0.713, ROC-AUC 0.872), but all three are within 0.002 F1. Output: data/processed/baseline_model_results.csv. |
 | T10 | Submit the status update; remind check-ins | Alex | Nov 16 | ⬜ Not started | — |  |
 | T11 | Make exploratory charts | Angelica | Nov 20 | ⬜ Not started | T04, T07 |  |
 | T12 | Train random forest and XGBoost | Javier | Nov 23 | ⬜ Not started | T09 |  |
