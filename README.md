@@ -104,6 +104,30 @@ Logistic regression is the benchmark for T12: it has the best F1, ROC-AUC, and a
 
 To rerun it, open the notebook and run all cells (requires `pandas`, `scikit-learn`, `matplotlib`, `seaborn`).
 
+## Random forest and XGBoost (task T12)
+
+`notebooks/T12_random_forest_xgboost.ipynb` tunes a random forest and XGBoost on the 14 engineered features, using the T08 split and the Assignment 4.2 workflow. Each model gets 8 settings searched with `GridSearchCV(cv=StratifiedKFold(5), scoring='f1')` on the training split only. Imbalance is handled with `class_weight="balanced"` (random forest) and `scale_pos_weight` = negatives / positives = 1.231 (XGBoost). Each tuned model is scored once on the test split at the default 0.5 threshold, next to the T09 logistic regression refit on the same split.
+
+Test-set results (hallucinated = positive class):
+
+| Model | Best settings | CV F1 | Precision | Recall | F1 | ROC-AUC | Avg. precision |
+|---|---|---|---|---|---|---|---|
+| Random forest | 200 trees, max depth 10, min leaf 1 | 0.759 | **0.708** | 0.755 | **0.731** | **0.875** | 0.812 |
+| XGBoost | 200 rounds, max depth 6, learning rate 0.05 | 0.758 | 0.688 | 0.762 | 0.723 | 0.874 | **0.815** |
+| Logistic regression (T09) | — | — | 0.657 | **0.779** | 0.713 | 0.872 | 0.802 |
+
+Both ensembles beat the benchmark on F1 (random forest +0.017, XGBoost +0.010) mainly through higher precision; logistic regression keeps the highest recall. The ROC-AUC gains are small (+0.002 to +0.003), so the features, not the model, limit performance. Fully grown random-forest trees overfit (CV train F1 1.00 vs. validation 0.75), so the depth limit matters.
+
+Outputs (in `results/`):
+
+- `predictions.csv`: one row per test answer (2,675) with `id`, `source_id`, `llm`, `task_type`, the true label `hallucinated`, and the predicted probabilities `prob_logreg`, `prob_rf`, and `prob_xgb`. Join to `data/processed/T05_token_counts.csv` on `id` for T17.
+- `T12_model_comparison.csv`: the test-set metrics above.
+- `T12_cv_results.csv`: every grid setting with its CV train and validation F1.
+
+CV folds are split by row, so answers to the same source can fall in different folds and the CV scores are slightly optimistic; the test score is unaffected.
+
+To rerun it, open the notebook and run all cells (requires `xgboost` in addition to the T09 packages).
+
 ## Task status
 
 *After finishing each task, add 2–3 sentences to its Comments cell in the table below: what you did, what you found, and any decisions you made (for example, "input tokens = prompt only"). These notes become most of the report's Data and Methods sections, so writing them as you go saves time at the end.*
@@ -125,7 +149,7 @@ To update, edit this README on GitHub (pencil icon) and change the emoji in the 
 | T09 | Build baseline models | Javier | Nov 16 | ✅ Done | T07, T08 | Trained logistic regression, decision tree, and random forest (balanced class weights) on the T08 split. Logistic regression is the benchmark (F1 0.713, ROC-AUC 0.872), but all three are within 0.002 F1. Output: data/processed/baseline_model_results.csv. |
 | T10 | Submit the status update; remind check-ins | Alex | Nov 16 | ⬜ Not started | — |  |
 | T11 | Make exploratory charts | Angelica | Nov 20 | ⬜ Not started | T04, T07 |  |
-| T12 | Train random forest and XGBoost | Javier | Nov 23 | ⬜ Not started | T09 |  |
+| T12 | Train random forest and XGBoost | Javier | Nov 23 | ✅ Done | T09 | Tuned 8 settings per model with 5-fold stratified CV on F1, with balanced class weights (RF) and scale_pos_weight (XGBoost). Random forest is best on test F1 (0.731 vs. 0.713 for the benchmark), XGBoost is close (0.723); ROC-AUC barely moves (0.872 → 0.875). Test probabilities for all three models are in results/predictions.csv for T17 and T18. |
 | T13 | Compute hallucination rates by model | Angelica | Nov 23 | ⬜ Not started | T04 |  |
 | T14 | Compute cost per answer and per trustworthy answer | Alex | Nov 23 | ⬜ Not started | T05, T06 |  |
 | T15 | Find the most important features | Javier | Nov 27 | ⬜ Not started | T12 |  |
