@@ -128,6 +128,28 @@ CV folds are split by row, so answers to the same source can fall in different f
 
 To rerun it, open the notebook and run all cells (requires `xgboost` in addition to the T09 packages).
 
+## Feature importance (task T15)
+
+`notebooks/T15_feature_importance.ipynb` explains the two tuned T12 models (rebuilt from `results/T12_cv_results.csv`; the notebook checks that they reproduce `results/predictions.csv`). It compares three methods: built-in importance (impurity for the random forest, gain for XGBoost), permutation importance on the test split (drop in ROC-AUC and F1, 20 repeats), and SHAP values, which also give the direction of each effect. The six LLM one-hot columns and the three task-type columns are also shuffled as groups, so "which LLM" and "which task" can be compared with the numeric features as single factors.
+
+Grouped permutation importance (drop in test ROC-AUC when the feature is shuffled):
+
+| Feature (group) | XGBoost | Random forest | Direction (SHAP) |
+|---|---|---|---|
+| LLM that wrote the answer (6 columns) | **0.140** | **0.141** | GPT-4 and GPT-3.5 lower the risk; Mistral-7B and Llama-2-7B raise it |
+| `word_overlap` | 0.093 | 0.054 | Higher overlap with the source → less hallucination |
+| Task type (3 columns) | 0.025 | 0.052 | Data-to-text raises the risk; QA lowers it |
+| `answer_length` | 0.014 | 0.008 | Longer answers → more hallucination |
+| `missing_numbers` | 0.007 | 0.007 | More numbers not found in the source → more hallucination |
+| `missing_names` | 0.002 | 0.005 | More names not found in the source → more hallucination |
+| `length_ratio` | 0.001 | 0.001 | No clear effect |
+
+Which LLM wrote the answer is the strongest factor, followed by `word_overlap`, the strongest content feature. All methods and both models agree on the top five single columns (`word_overlap`, the GPT-3.5, GPT-4, and Mistral-7B indicators, and Data-to-text). `length_ratio` adds almost nothing on unseen data and could be dropped. Built-in importance overstates the continuous features (for example, `missing_names` and `length_ratio` in the random forest) compared with test-set permutation importance, so the report should cite the permutation and SHAP results.
+
+Outputs (in `results/`): `T15_feature_importance.csv` (every score, its rank per method, the mean rank, and the direction) and `T15_grouped_permutation_importance.csv`.
+
+To rerun it, run T12 first, then open the notebook and run all cells (requires `shap` in addition to the T12 packages).
+
 ## Task status
 
 *After finishing each task, add 2–3 sentences to its Comments cell in the table below: what you did, what you found, and any decisions you made (for example, "input tokens = prompt only"). These notes become most of the report's Data and Methods sections, so writing them as you go saves time at the end.*
@@ -152,7 +174,7 @@ To update, edit this README on GitHub (pencil icon) and change the emoji in the 
 | T12 | Train random forest and XGBoost | Javier | Nov 23 | ✅ Done | T09 | Tuned 8 settings per model with 5-fold stratified CV on F1, with balanced class weights (RF) and scale_pos_weight (XGBoost). Random forest is best on test F1 (0.731 vs. 0.713 for the benchmark), XGBoost is close (0.723); ROC-AUC barely moves (0.872 → 0.875). Test probabilities for all three models are in results/predictions.csv for T17 and T18. |
 | T13 | Compute hallucination rates by model | Angelica | Nov 23 | ⬜ Not started | T04 |  |
 | T14 | Compute cost per answer and per trustworthy answer | Alex | Nov 23 | ⬜ Not started | T05, T06 |  |
-| T15 | Find the most important features | Javier | Nov 27 | ⬜ Not started | T12 |  |
+| T15 | Find the most important features | Javier | Nov 27 | ✅ Done | T12 | Compared built-in importance, test-set permutation importance (single and grouped one-hots), and SHAP for the tuned RF and XGBoost. The LLM that wrote the answer is the strongest factor (ROC-AUC drop 0.14), then word_overlap (0.05–0.09; higher overlap → less hallucination); length_ratio adds almost nothing. Outputs: results/T15_feature_importance.csv and results/T15_grouped_permutation_importance.csv. |
 | T16 | Cluster the hallucinated answers | Angelica | Nov 27 | ⬜ Not started | T07 |  |
 | T17 | Find the best threshold; simulate local-first fallback | Alex | Nov 30 | ⬜ Not started | T12, T14 |  |
 | T18 | Build the learning curve | Alex | Nov 30 | ⬜ Not started | T12 |  |
